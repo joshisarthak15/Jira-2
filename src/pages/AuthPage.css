@@ -1,0 +1,36 @@
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f4f5f7;
+}
+
+.auth-box {
+  width: 400px;
+  padding: 30px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.auth-box h2 {
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.auth-box .ms-TextField,
+.auth-box .ms-Button {
+  width: 100%;
+}
+
+.auth-box .ms-Checkbox {
+  text-align: left;
+}
+
+.auth-box .auth-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
