@@ -9,14 +9,68 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleGoogleLogin = async () => {
-    await signInWithPopup(auth, googleProvider);
-    navigate("/dashboard");
+     console.log("🔥 Attempting Google Signup...");
+        try {
+          const userCredential = await signInWithPopup(auth, googleProvider);
+          const user = userCredential.user;
+    
+          if (user) {
+            console.log("✅ Google Signup Success:", user);
+    
+            // ✅ Store login method
+            localStorage.setItem("loginMethod", "google");
+    
+            // ✅ Store user info
+            const userInfo = {
+              name: user.displayName || "User",
+              email: user.email || "No Email",
+              photoURL: user.photoURL || "https://via.placeholder.com/150",
+            };
+            localStorage.setItem("userInfo", JSON.stringify(userInfo));
+    
+            console.log("✅ Stored Google User Info in localStorage:", userInfo);
+            navigate("/dashboard");
+          } else {
+            console.log("❌ Google Signup Failed - No User Data");
+          }
+        } catch (error) {
+          console.error("❌ Google Signup Error:", error);
+        }
   };
-
+  
+  
+  
   const handleMicrosoftLogin = async () => {
-    const user = await signInWithMicrosoft();
-    if (user) navigate("/dashboard");
+    console.log("🔥 Attempting Microsoft Signup...");
+        try {
+          const user = await signInWithMicrosoft();
+    
+          if (user) {
+            console.log("✅ Microsoft Signup Success:", user);
+    
+            // ✅ Store login method
+            localStorage.setItem("loginMethod", "microsoft");
+    
+            // ✅ Store user info
+            const userInfo = {
+              name: user.account.name || "User",
+              email: user.account.username || "No Email",
+              photoURL: user.account.idTokenClaims?.picture || "https://via.placeholder.com/150",
+            };
+            localStorage.setItem("userInfo", JSON.stringify(userInfo));
+    
+            console.log("✅ Stored Microsoft User Info in localStorage:", userInfo);
+            navigate("/dashboard");
+          } else {
+            console.log("❌ Microsoft Signup Failed - No User Data");
+          }
+        } catch (error) {
+          console.error("❌ Microsoft Signup Error:", error);
+        }
   };
+  
+  
+  
 
   return (
     <div className="auth-container">
