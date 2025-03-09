@@ -151,7 +151,7 @@ const Navbar = () => {
             <hr style={{ borderTop: "1px solid #ddd", margin: "10px 0" }} />
             
             {/* ✅ Display the login method correctly */}
-            <p style={{ fontWeight: "bold", color: "#555" }}>Logged in via: {loginMethod}</p>
+            {/* <p style={{ fontWeight: "bold", color: "#555" }}>Logged in via: {loginMethod}</p> */}
             
             <p style={{ cursor: "pointer", padding: "8px", fontWeight: "bold", color: "#333" }}>Profile</p>
             <p style={{ cursor: "pointer", padding: "8px", fontWeight: "bold", color: "#333" }}>Personal Settings</p>
