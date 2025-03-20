@@ -1,6 +1,8 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { setPersistence,browserSessionPersistence } from "firebase/auth";
 
+// ✅ Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCYLkr2-r7XOKcPzbwOaGmB4xrBNjaCl1Y",
   authDomain: "reactauthproject-17734.firebaseapp.com",
@@ -11,35 +13,13 @@ const firebaseConfig = {
   measurementId: "G-CXWXQ3BR4S",
 };
 
+// ✅ Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider();
+export const auth = getAuth(app);
 
-export { auth, googleProvider, signInWithPopup };
+setPersistence(auth, browserSessionPersistence)
+  .then(() => console.log("✅ Firebase persistence set to session"))
+  .catch((error) => console.error("❌ Persistence error:", error));
 
-export async function signInWithGoogle() {
-  try {
-    console.log("🔥 Signing in with Google...");
-    const userCredential = await signInWithPopup(auth, googleProvider);
-    const user = userCredential.user;
+export default app;
 
-    console.log("✅ Google Login Success:", user);
-
-    // ✅ Store login method
-    localStorage.setItem("loginMethod", "google");
-
-    // ✅ Store user details (Name, Email, Photo)
-    const userInfo = {
-      name: user.displayName || "User",
-      email: user.email || "No Email",
-      photoURL: user.photoURL || "https://via.placeholder.com/150", // Default avatar
-    };
-    localStorage.setItem("userInfo", JSON.stringify(userInfo));
-
-    console.log("✅ User info saved to localStorage:", userInfo);
-
-    return user;
-  } catch (error) {
-    console.error("❌ Google Sign-In Error:", error);
-  }
-}

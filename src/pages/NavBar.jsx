@@ -5,6 +5,8 @@ import { Persona, PersonaSize } from "@fluentui/react/lib/Persona";
 import { Callout, DirectionalHint } from "@fluentui/react/lib/Callout";
 import { initializeIcons } from "@fluentui/react/lib/Icons";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../firebase";
+import { SignOutUser } from "../AuthUtil";
 
 initializeIcons();
 
@@ -12,69 +14,54 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [isProfileOpen, setProfileOpen] = useState(false);
   const [profileTarget, setProfileTarget] = useState(null);
-  const [loginMethod, setLoginMethod] = useState("Unknown");
-  const [userInfo, setUserInfo] = useState({ name: "User", email: "No Email", photoURL: "" });
-
-  // ✅ Fetch user info on mount and update dynamically
-  useEffect(() => {
-    const getLoginDetails = () => {
-      const storedMethod = localStorage.getItem("loginMethod") || "Unknown";
-      setLoginMethod(storedMethod);
   
-      // ✅ Retrieve user details from localStorage
-      const storedUserInfo = JSON.parse(localStorage.getItem("userInfo"));
-  
-      if (storedUserInfo) {
-        setUserInfo({
-          name: storedUserInfo.name || "User",
-          email: storedUserInfo.email || "No Email",
-          photoURL: storedUserInfo.photoURL || "https://via.placeholder.com/150"
-        });
-      }
+  const[userDetails, setUserDetails] = useState(null);
+    const fetchUserData = async () =>{
+      auth.onAuthStateChanged(async(user) =>{
+        console.log(user)
+        setUserDetails(user);
+      }) 
     };
-  
-    getLoginDetails(); // Fetch on mount
-  
-    // ✅ Listen for storage updates in case login method changes
-    const handleStorageChange = () => {
-      getLoginDetails();
-    };
-  
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
+    useEffect(()=>{
+      fetchUserData();
+    },[]);
   
 
   const handleLogout = async () => {
     try {
-      if (loginMethod === "google") {
-        if (window.google && window.google.accounts) {
-          window.google.accounts.id.disableAutoSelect();
-          console.log("✅ Google Logout Successful");
-        } else {
-          console.log("❌ Google Logout Failed: API not available");
-        }
-      } else if (loginMethod === "microsoft") {
+      const storedMethod = localStorage.getItem("loginMethod");
+  
+      if (storedMethod === "google") {
+         await SignOutUser();
+         navigate("/login")
+      } 
+      else if (storedMethod === "microsoft") {
         if (window.msalInstance) {
           await window.msalInstance.logoutPopup();
           console.log("✅ Microsoft Logout Successful");
         } else {
           console.log("❌ Microsoft Logout Failed: MSAL instance not found");
         }
-      } else {
+      } 
+      else {
         console.log("❌ No valid login method found.");
       }
+  
+      
+  
+      // ✅ Clear local storage (user session)
+      localStorage.removeItem("loginMethod");
+      localStorage.removeItem("userInfo");
+  
+      // ✅ Redirect to signup
+      navigate("/login");
+  
     } catch (error) {
       console.error("❌ Logout Error:", error);
     }
-  
-    localStorage.clear();
-    sessionStorage.clear();
-    setLoginMethod("Unknown");
-    setUserInfo({ name: "User", email: "No Email", photoURL: "" });
-  
-    navigate("/");
   };
+  
+  
   
 
   const navItems = [
@@ -86,6 +73,8 @@ const Navbar = () => {
     { key: "plans", text: "Plans", subItems: ["My Plans", "New Plan"] },
     { key: "apps", text: "Apps", subItems: ["Marketplace", "Installed Apps"] },
   ];
+
+  
 
   return (
     <div style={{ width: "98%", position: "fixed", top: 0, left: 0, display: "flex", alignItems: "center", justifyContent: "space-between", border: "1px solid black", backgroundColor: "white", padding: "12px 20px", zIndex: 1000 }}>
@@ -131,7 +120,7 @@ const Navbar = () => {
           }}
         />
       </div>
-
+          
       {/* Profile Dropdown */}
       {isProfileOpen && (
         <Callout
@@ -141,17 +130,38 @@ const Navbar = () => {
           gapSpace={10}
           setInitialFocus
         >
+          
           <div style={{ textAlign: "center", padding: "10px" }}>
-            <Persona
-              text={userInfo.name}
-              secondaryText={userInfo.email}
-              size={PersonaSize.size48}
-              imageUrl={userInfo.photoURL}
-            />
+            
+            {userDetails ? (
+              
+              <Persona
+                text={userDetails.displayName}
+                secondaryText={userDetails.email}
+                size={PersonaSize.size48}
+                imageUrl={userDetails.photoURL || "https://via.placeholder.com/150"}
+                key={userDetails.uid || userDetails.email}
+                onRenderPersonaCoin={() => (
+                  <img
+                    src={userDetails.photoURL}
+                    alt="Profile"
+                    style={{ width: 48, height: 48, borderRadius: "50%" }}
+                    onError={(e) => {
+                      console.error("Image failed to load:", userDetails.photoURL);
+                      e.target.src = "https://via.placeholder.com/150"; // Fallback Image
+                    }}
+                  />
+                )}
+              />
+
+
+
+            ):<p>Loading...</p>}
+            
             <hr style={{ borderTop: "1px solid #ddd", margin: "10px 0" }} />
             
             {/* ✅ Display the login method correctly */}
-            {/* <p style={{ fontWeight: "bold", color: "#555" }}>Logged in via: {loginMethod}</p> */}
+
             
             <p style={{ cursor: "pointer", padding: "8px", fontWeight: "bold", color: "#333" }}>Profile</p>
             <p style={{ cursor: "pointer", padding: "8px", fontWeight: "bold", color: "#333" }}>Personal Settings</p>
