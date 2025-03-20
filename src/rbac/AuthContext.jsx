@@ -3,7 +3,7 @@ import { auth } from "../firebase";
 import {
   onAuthStateChanged,
   setPersistence,
-  browserSessionPersistence,
+  browserLocalPersistence,
   signOut as firebaseSignOut,
 } from "firebase/auth";
 import { PublicClientApplication } from "@azure/msal-browser";
@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const checkAuthState = async () => {
-      await setPersistence(auth, browserSessionPersistence); // Firebase persistence
+      await setPersistence(auth, browserLocalPersistence); // Firebase persistence
 
       // 🔹 Google (Firebase) Auth
       const unsubscribeFirebase = onAuthStateChanged(auth, (firebaseUser) => {

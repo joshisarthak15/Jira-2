@@ -4,7 +4,7 @@ export const msalConfig = {
   auth: {
     clientId: "b3c8c04d-8739-4362-b591-fb39f6cae895",
     authority: "https://login.microsoftonline.com/d16240c3-f72f-409d-9a6b-497e0afd2d6e",
-    redirectUri: "http://localhost:5173",// Adjust based on your app's domain
+    redirectUri: "http://localhost:5175",// Adjust based on your app's domain
   },
 };
 

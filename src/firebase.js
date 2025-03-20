@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
-import { setPersistence,browserSessionPersistence } from "firebase/auth";
+import { setPersistence,browserLocalPersistence } from "firebase/auth";
 
 // ✅ Firebase Configuration
 const firebaseConfig = {
@@ -17,8 +17,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 
-setPersistence(auth, browserSessionPersistence)
-  .then(() => console.log("✅ Firebase persistence set to session"))
+setPersistence(auth, browserLocalPersistence)
+  .then(() => console.log("✅ Firebase persistence set to Local"))
   .catch((error) => console.error("❌ Persistence error:", error));
 
 export default app;

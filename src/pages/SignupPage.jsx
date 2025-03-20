@@ -5,7 +5,7 @@ import { signInWithMicrosoft } from "../auth";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { SignInWithGoogle } from "../AuthUtil";
-import { auth } from "../firebase";
+
 
 const SignupPage = () => {
   const navigate = useNavigate();

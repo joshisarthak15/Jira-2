@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { auth } from "../firebase";
-import { msalInstance } from "../auth";
-import { useNavigate } from "react-router-dom";
 import Navbar from "./NavBar"; // Import Navbar
 import "./AuthPage.css";
 
