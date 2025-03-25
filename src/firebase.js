@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { setPersistence,browserLocalPersistence } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 // ✅ Firebase Configuration
 const firebaseConfig = {
@@ -16,10 +17,12 @@ const firebaseConfig = {
 // ✅ Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+const db = getFirestore(app);
 
 setPersistence(auth, browserLocalPersistence)
   .then(() => console.log("✅ Firebase persistence set to Local"))
   .catch((error) => console.error("❌ Persistence error:", error));
 
-export default app;
+
+export {db, app} ;
 

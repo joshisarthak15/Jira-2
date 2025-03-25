@@ -6,6 +6,28 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { SignInWithGoogle } from "../AuthUtil";
 
+async function addObjectToFirestore(collectionName, data) {
+  try {
+      // Define the query to check for existing documents with the same values
+      const q = query(collection(db, collectionName), where("email", "==", data.email));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+          console.log("Duplicate entry detected. Document not added.");
+          return null;
+      }
+
+      // Add a default role field if not provided
+      const dataWithRole = { ...data, role: "user" };
+
+      // Add the document to Firestore
+      const docRef = await addDoc(collection(db, collectionName), dataWithRole);
+      console.log("Document written with ID: ", docRef.id);
+      return docRef.id;
+  } catch (e) {
+      console.error("Error adding document: ", e);
+  }
+}
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -15,6 +37,7 @@ const SignupPage = () => {
     try {
       const result = await SignInWithGoogle(); // ✅ Call the function properly
       console.log(result);
+      addObjectToFirestore("users", { name: result.user.displayName, email: result.user.email});
       localStorage.setItem("loginMethod", "google");
       navigate("/dashboard"); // ✅ Redirect after successful login
     } catch (error) {
@@ -29,7 +52,7 @@ const SignupPage = () => {
 
       if (user) {
         console.log("✅ Microsoft Signup Success:", user);
-
+        addObjectToFirestore("users", { name: user.idTokenClaims.name, email: user.idTokenClaims.preferred_username });
         // ✅ Store login method
         localStorage.setItem("loginMethod", "microsoft");
 

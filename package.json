@@ -23,6 +23,7 @@
     "@azure/msal-browser": "^4.5.0",
     "@fluentui/react": "^8.122.11",
     "@fluentui/react-components": "^9.60.0",
+    "@react-oauth/google": "^0.12.1",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "firebase": "^11.3.1",

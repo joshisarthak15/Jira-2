@@ -6,25 +6,36 @@ import {
 } from "react-router-dom";
 import SignupPage from "./pages/SignupPage";
 import LoginPage from "./pages/LoginPage";
-import Dashboard from "./pages/dashboard";
+import Dashboard from "./pages/Dashboard";
+import AdminPanel from "./pages/AdminPanel";
 import ProtectedRoute from "./rbac/ProtectedRoute";
 import { useAuth } from "./rbac/AuthContext";
 
 const AppRoutes = () => {
-  const { user } = useAuth(); // ✅ Get user from AuthContext
-  console.log(user);
-  
+  const { user, userRole } = useAuth(); // ✅ Get user & role from AuthContext
+  console.log("User Role:", userRole);
+
   return (
     <Router>
       <Routes>
-        {/* 🔒 Redirect logged-in users away from signup/login */}
-        <Route path="/signup" element={user ? <Navigate to="/dashboard" replace /> : <SignupPage />} />
-        <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
+        {/* 🔒 Public Routes (Only accessible when NOT logged in) */}
+        {!user && (
+          <>
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/" element={<SignupPage />} />
+          </>
+        )}
 
-        {/* 🔒 Protect routes under ProtectedRoute */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Navigate to="/dashboard" />} />
+        {/* 🔒 General Protected Routes (All authenticated users) */}
+        <Route element={<ProtectedRoute allowedRoles={["admin", "user"]} />}>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
+
+        {/* 🛠️ Admin Panel (Only Admins Can Access) */}
+        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+          <Route path="/admin" element={<AdminPanel />} />
         </Route>
 
         {/* 🔥 Redirect unknown routes */}

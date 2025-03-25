@@ -44,3 +44,11 @@
   border: 100px;
   text-align: center;
 }
+.adminpanel{
+  justify-content: center;
+  height: 12vh;
+  width: 100vw;
+  /* align-items: center; */
+  border: 100px;
+  text-align: center;
+}
